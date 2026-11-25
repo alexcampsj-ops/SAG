@@ -15,13 +15,19 @@ from rich.columns import Columns
 from rich.console import Console
 from rich.markup import escape
 from rich.panel import Panel
-from rich.prompt import Prompt
+from rich.prompt import Prompt as _Prompt
 from rich.rule import Rule
 from rich.table import Table
 from rich.text import Text
 
 from modelos import DIAS, Cancelado
 from repositorio import coincide_codigo
+
+class Prompt(_Prompt):
+    """Subclase de rich.Prompt con mensajes de error en español."""
+    validate_error_message = "[prompt.invalid]Por favor escribe un valor válido"
+    illegal_choice_message = "[prompt.invalid.choice]Por favor elige una de las opciones disponibles"
+
 
 GUINDA = "#c0396b"
 ACENTO = "cyan"
