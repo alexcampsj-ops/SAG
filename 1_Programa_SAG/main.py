@@ -24,7 +24,7 @@ DB = {
     "port": 3306,
     "user": "root",
     "password": "",   # la misma que usas para entrar a MySQL Workbench
-    "database": "sags",
+    "database": "sag",
 }
 
 
