@@ -8,7 +8,7 @@ from __future__ import annotations
 
 from abc import ABC, abstractmethod
 from collections import Counter
-from datetime import date, datetime, timedelta
+from datetime import date, datetime, time, timedelta
 from typing import Callable
 
 from modelos import DIAS, Cancelado, Cliente, Membresia, ReglaNegocio, Rutina
@@ -217,7 +217,7 @@ class MenuBase(ABC):
                      pie=f"{len(r.enfoques)} enfoque(s) · {r.total_ejercicios} ejercicio(s)")
 
     def sesiones_de(self, cliente) -> list:
-        return sorted(cliente.sesiones, key=lambda s: (s.fecha, s.hora_inicio), reverse=True)
+        return sorted(cliente.sesiones, key=lambda s: (s.fecha, s.hora_inicio or time.min), reverse=True)
 
     # --------------------------------------------------------- operaciones comunes
     def ver_tipos_membresia(self) -> None:
@@ -482,7 +482,7 @@ class MenuEntrenador(MenuBase):
                               opcional=True, pregunta="Ver inscritos de la clase")
         if clase:
             self.v.tabla(f"Inscritos en {clase.nombre}", ["Cliente", "Celular", "Inscrito el", "Observaciones"],
-                         [[i.cliente.nombre_completo, i.cliente.celulares[0], f_fecha(i.fecha),
+                         [[i.cliente.nombre_completo, i.cliente.celulares[0] if i.cliente.celulares else "—", f_fecha(i.fecha),
                            t(i.observaciones)] for i in clase.inscritos],
                          pie=f"{len(clase.inscritos)} de {clase.cupo_max} lugares ocupados")
 
@@ -1220,7 +1220,7 @@ class MenuAdministrador(MenuEntrenador, MenuRecepcionista):
         vencidos = [c for c in clientes if c.situacion != "Activa"]
         self.v.tabla("Clientes con membresía vencida o sin membresía",
                      ["Código", "Cliente", "Celular", "Última membresía", "Venció"],
-                     [[c.codigo, c.nombre_completo, c.celulares[0],
+                     [[c.codigo, c.nombre_completo, c.celulares[0] if c.celulares else "—",
                        (u := max(c.membresias, key=lambda m: m.fecha_vencimiento)).tipo.nombre if c.membresias else "—",
                        f_fecha(u.fecha_vencimiento) if c.membresias else "—"] for c in vencidos])
 
